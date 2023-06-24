@@ -4,8 +4,24 @@
   </title>
   <body>
     Testing something
+    <input type="text" id="fname" name="fname">
   </body>
 </html>
 <script>
   console.log('hello')
+
+  function httpGet(theUrl) {
+      var xmlHttp = new XMLHttpRequest();
+      const params = {"url":"/content/dam/pandora/react-mini-app-unified-paywall/v1/en/main/index"};
+
+      xmlHttp.open( "POST", "https://ccpuap-services-stage.adobe.io/apis/v2/odin/consolidated", false ); // false for synchronous request
+      xmlHttp.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      xmlHttp.setRequestHeader('X-Api-Key', 'ccp-uap-services');
+      xmlHttp.setRequestHeader('Authorization', document.querySelector('#fname').value);
+      xmlHttp.send( JSON.stringify(params) );
+      return xmlHttp.responseText;
+  }
+
+  // var res = httpGet();
+  console.log(res);
 </script>
