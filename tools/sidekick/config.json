@@ -18,6 +18,15 @@
       "includePaths": [ "**.docx**" ]
     },
     {
+      "id": "testt",
+      "title": "testt",
+      "environments": [ "edit" ],
+      "isPalette": true,
+      "paletteRect": "top: auto; bottom: 25px; left: 25px; height: 388px; width: 360px;",
+      "url": "/tools/testt/index.html",
+      "includePaths": [ "**.docx**" ]
+    },
+    {
       "id": "tools",
       "title": "Tools",
       "isContainer": true
