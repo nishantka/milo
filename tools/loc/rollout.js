@@ -84,7 +84,7 @@ async function persist(srcPath, mdast, dstPath) {
 
 // TODO: remove after franklin fix for bold issue
  export const getLeaf = (node, type, parent=null) => {
-  if (node?.type === type || !node.children) return {parent, node};
+  if (node?.type === type || !node.children) return node;
 
   if (node.children) {
     for (let i = 0; i < node.children.length; i++) {
@@ -99,11 +99,26 @@ async function persist(srcPath, mdast, dstPath) {
 export const addBoldHeaders = (mdast) => {
   const tables = mdast.children.filter((child) => child.type === 'gridTable'); // gets all block
   const tableMap = tables.forEach((table) => {
-    var {node, parent} = getLeaf(table, 'text'); // gets first text node i.e. header
-    if(parent.type !== 'strong') {
-      let idx = parent.children.indexOf(node);
-      parent.children[idx] = { type: 'strong', children:[node]}
-    }
+    var childArr = []; // create new children array for paragraph
+    var paragraph = getLeaf(table, 'paragraph'); // gets first paragraph node i.e. header
+    if (!paragraph || !paragraph.children) return;
+    for (let i = 0, j = -1; i<paragraph.children.length; ++i) {
+      if (paragraph.children[i].type === 'strong') { // process children with strong type
+        if (j < 0 || (childArr[j] && childArr[j].type !== 'strong')) childArr[++j] = { type: 'strong', children:[{ type: 'text', value: '' }] };
+        if (paragraph.children[i].children) {
+          paragraph.children[i].children.forEach((curTextChild) => { // process all text children inside strong type
+            if (curTextChild && curTextChild.type === 'text')
+            childArr[j].children[0].value = childArr[j].children[0].value.concat(curTextChild.value);
+          })
+        }
+      } else if(paragraph.children[i].type === 'text') { // process children with text type
+        if (j < 0 || (childArr[j] && childArr[j].type !== 'strong')) childArr[++j] = { type: 'strong', children:[{ type: 'text', value: '' }] };
+        childArr[j].children[0].value = childArr[j].children[0].value.concat(paragraph.children[i].value);
+      } else {
+        childArr[++j] = paragraph.children[i]; // add all other children
+      }
+    };
+    paragraph.children = childArr;
   });
   return tableMap;
 };
