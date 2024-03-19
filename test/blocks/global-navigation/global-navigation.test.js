@@ -24,6 +24,7 @@ import globalNavigationMock from './mocks/global-navigation.plain.js';
 import globalNavigationActiveMock from './mocks/global-navigation-active.plain.js';
 import globalNavigationWideColumnMock from './mocks/global-navigation-wide-column.plain.js';
 import globalNavigationCrossCloud from './mocks/global-navigation-cross-cloud.plain.js';
+import globalNavigationDNTLinks from './mocks/global-navigation.plain-dnt-link.js';
 
 const ogFetch = window.fetch;
 
@@ -125,6 +126,40 @@ describe('global navigation', () => {
       expect(isElementVisible(document.querySelector(selectors.brandContainer))).to.equal(true);
       expect(isElementVisible(document.querySelector(selectors.mainNavToggle))).to.equal(true);
       expect(document.querySelectorAll(selectors.navItem).length).to.equal(9);
+    });
+  });
+
+  describe('Gnav Localization', () => {
+    it('should localize the gnav links', async () => {
+      await createFullGlobalNavigation({
+        customConfig: {
+          pathname: '/lu_fr/global-nav/test',
+          locales: {
+            lu_fr: { ietf: 'fr-LU', tk: 'hah7vzn.css', prefix: '/lu_fr' },
+            '': { ietf: 'en-US', tk: 'hah7vzn.css', prefix: '' },
+          },
+        },
+        globalNavigation: globalNavigationDNTLinks,
+      });
+      const secondaryButton = document.querySelectorAll(`${selectors.cta}[daa-ll='Secondary-7']`);
+      console.log(secondaryButton[0].getAttribute('href'));
+      expect(secondaryButton[0].getAttribute('href')).to.equal('/lu_fr/test/withoutdnt');
+    });
+
+    it('should check the DNT functionality works on gnav', async () => {
+      await createFullGlobalNavigation({
+        customConfig: {
+          pathname: '/lu_fr/global-nav/test',
+          locales: {
+            lu_fr: { ietf: 'fr-LU', tk: 'hah7vzn.css', prefix: '/lu_fr' },
+            '': { ietf: 'en-US', tk: 'hah7vzn.css', prefix: '' },
+          },
+        },
+        globalNavigation: globalNavigationDNTLinks,
+      });
+      const primaryButton = document.querySelectorAll(`${selectors.cta}[daa-ll='Primary-6']`);
+      console.log(primaryButton[0].getAttribute('href'));
+      expect(primaryButton[0].getAttribute('href')).to.equal('/test/withdnt');
     });
   });
 
