@@ -1083,7 +1083,7 @@ export default async function init(block) {
   await gnav.init();
   block.setAttribute('daa-im', 'true');
   const mepMartech = mep?.martech || '';
-  block.setAttribute('daa-lh', `gnav|${getExperienceName()}${mepMartech}`);
+  block.setAttribute('daa-lh', `gnav|${getExperienceName()}${mepMartech}|unav`);
   if (isDarkMode()) block.classList.add('feds--dark');
   return gnav;
 }
