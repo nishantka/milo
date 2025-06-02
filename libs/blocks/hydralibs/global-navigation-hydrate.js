@@ -79,6 +79,18 @@ class HGnav extends Gnav {
         this.block.classList.add('new-nav');
       }
     });
+
+    document.addEventListener('click', (e) => {
+      const openElemSelector = `${selectors.globalNav} [aria-expanded = "true"]:not(.universal-nav-container *), ${selectors.localNav} [aria-expanded = "true"]`;
+      const isClickedElemOpen = [...document.querySelectorAll(openElemSelector)]
+      .find((openItem) => openItem.parentElement.contains(e.target));
+
+      if(!isClickedElemOpen) {
+        const animatedElement = this.isLocalNav() ? document.querySelector('header.new-nav + .feds-localnav .feds-localnav-items') : undefined;
+        const animationType = this.isLocalNav() ? 'transition' : undefined;
+        closeAllDropdowns({ animatedElement, animationType });
+      }
+    });
   }
 
   block_4({
