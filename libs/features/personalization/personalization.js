@@ -9,12 +9,14 @@ import {
   loadScript,
   localizeLink,
   getFederatedUrl,
+  getMetadata,
 } from '../../utils/utils.js';
 
 /* c8 ignore start */
 const PHONE_SIZE = window.screen.width < 550 || window.screen.height < 550;
 const safariIpad = navigator.userAgent.includes('Macintosh') && navigator.maxTouchPoints > 1;
 const isGalaxyTab = navigator.userAgent.includes('Linux') && navigator.maxTouchPoints > 1;
+
 export const US_GEO = 'en-us';
 export const PERSONALIZATION_TAGS = {
   all: () => true,
@@ -914,6 +916,30 @@ async function setMepCountry(config) {
   }
 }
 
+async function fetchFromRainfocus(eventId = 'max2024') {
+  if (!window.adobeIMS?.isSignedInUser()) {
+    // throw new Error('User not signed in');
+    return {};
+  }
+  const { userId } = await window.adobeIMS.getProfile();
+  const accessToken = window.adobeIMS.getAccessToken()?.token;
+  if (!accessToken) {
+    // throw new Error('No access token available');
+    return {};
+  }
+  const url = `https://www.stage.adobe.com/events/api/rf-auth-seq-generic/${eventId}?user_id=${encodeURIComponent(userId)}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    credentials: 'same-origin',
+  });
+  if (!response.ok) {
+    // throw new Error(`API request failed with status ${response.status}`);
+    return {};
+  }
+  return response.json();
+}
+
 async function getPersonalizationVariant(
   manifestPath,
   variantNames = [],
@@ -923,6 +949,22 @@ async function getPersonalizationVariant(
   if (config.mep?.variantOverride?.[manifestPath]) {
     return config.mep.variantOverride[manifestPath];
   }
+
+  let eventDetails = null;
+  const eventId = getMetadata('event-id');
+  if (eventId && window.adobeIMS?.isSignedInUser()) {
+    eventDetails = await fetchFromRainfocus(eventId);
+  }
+
+  const isRegistered = (eventParam) => {
+    if (
+      !Object.keys(eventDetails).length
+      || !eventParam
+      || `event-${eventId}-registered` !== eventParam
+    ) return false;
+
+    return eventDetails?.isRegistered === true;
+  };
 
   const variantInfo = buildVariantInfo(variantNames);
 
@@ -945,6 +987,7 @@ async function getPersonalizationVariant(
     if (name.toLowerCase().startsWith('previouspage-')) return checkForPreviousPageMatch(name);
     if (hasCountryMatch(name, config)) return true;
     if (userEntitlements?.includes(name)) return true;
+    if (name.startsWith('event-')) return isRegistered(name);
     return PERSONALIZATION_KEYS.includes(name) && PERSONALIZATION_TAGS[name]();
   };
 
@@ -965,6 +1008,7 @@ async function getPersonalizationVariant(
   }
 
   const matchingVariant = variantNames.find((variant) => variantInfo[variant].some(matchVariant));
+  console.log(matchingVariant);
   return matchingVariant;
 }
 
