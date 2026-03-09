@@ -64,11 +64,17 @@
 
 .market-selector-drag-handle {
   display: none;
+  padding: 8px 0 16px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.market-selector-drag-handle-bar {
   width: 56px;
   height: 6px;
+  margin: 0 auto;
   background: var(--color-gray-200);
   border-radius: 3px;
-  margin: 0 auto 16px;
 }
 
 .market-selector-search {
@@ -169,15 +175,13 @@
     z-index: 9999;
     overflow: visible;
     margin: 0;
-    padding-bottom: 8px;
+    padding: 0 1px 8px;
     transition: transform 0.3s ease, opacity 0.3s ease;
     border: none;
   }
 
   .market-selector-drag-handle {
     display: block;
-    cursor: grab;
-    touch-action: none;
   }
 
   .market-selector-search {
