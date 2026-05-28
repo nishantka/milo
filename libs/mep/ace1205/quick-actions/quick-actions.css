@@ -36,6 +36,19 @@
     border-radius: var(--s2a-border-radius-md);
     text-decoration: none;
 
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgb(0 0 0 / 0%);
+      transition: background 0.3s ease;
+      pointer-events: none;
+    }
+
+    &:hover::before {
+      background: rgb(0 0 0 / 8%);
+    }
+
     &:focus-visible {
       outline: 2px solid var(--s2a-color-focus-ring-default);
       outline-offset: 2px;
@@ -48,11 +61,6 @@
     inset-block-start: var(--s2a-spacing-8);
     inset-block-end: 52px; /* padding-block-end(16px) + 2 × line-height(18px) */
     display: block;
-    transition: transform 0.3s ease;
-  }
-
-  .quick-actions-tile:hover .quick-actions-media {
-    transform: scale(1.05);
   }
 
   .quick-actions-media img,
