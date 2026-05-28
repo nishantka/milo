@@ -43,8 +43,8 @@ const N_UP_MAP = { 2: 'two-up', 3: 'three-up', 4: 'four-up' };
 function decorate(block) {
   const header = decorateSectionHeader(block);
   const tileRows = [...block.children].filter((row) => row.children.length >= 2);
-  const nUp = N_UP_MAP[tileRows.length] || 'six-up';
-  const grid = createTag('div', { class: `quick-actions-grid ${nUp}` });
+  const nUpClass = N_UP_MAP[tileRows.length] || 'six-up';
+  const grid = createTag('div', { class: `quick-actions-grid ${nUpClass}` });
 
   tileRows.forEach((row) => grid.append(buildTile(row)));
 
