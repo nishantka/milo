@@ -1,6 +1,7 @@
 import { decorateViewportContent, decorateBlockText } from '../../../utils/decorate.js';
 import { createTag } from '../../../utils/utils.js';
 
+// test for tint on hover
 function decorateSectionHeader(block) {
   const firstRow = block.children[0];
   if (!firstRow) return null;
